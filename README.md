@@ -18,7 +18,23 @@ Following packages are required for this repo.
     - catalyst 21.10+
     - mlxtend 0.19+
  ## Datasets
- Cifar datasets and synthetic datasets are under the directory **'data'**. To train the network on face verification you need to download '#0969DAMS1MV3'  `rgb(9, 105, 218)cev` <span style="color: green"> Some green text </span>
-dataset. We have used a subset of this dataset including 12K individuals. We can provide this dataset for the interested users. Please send an email to hakan.cevikalp@gmail.com if you want this specific dataset.
+ Cifar datasets and synthetic datasets are under the directory **'data'**. To train the network on face verification you need to download **MS1MV3** dataset. We have used a subset of this dataset including 12K individuals. We can provide this dataset for the interested users. Please send an email to hakan.cevikalp@gmail.com if you want this specific dataset.
 # 2. Training & Evaluation
 ## Synthetic Experiments
+- For synthetic experiments, simply run **'main_dsc_cifar_synthetic.py'** for our deafult loss function, **'main_dsc_cifar_synthetic_hinge.py'** for the hinge loss, and **'main_dsc_cifar_synthetic_softmax.py'** for softmax loss function. They will produce the figures used in Fig. 3 given in the paper.
+## Open Set Recognition
+- For open set recognition, use the files under the **'OpenSet'** directory. For training simply run **xx.py** file and use **xx.py** file for testing. 
+## Closed Set Recognition
+- Just use **'main_cifar.py'** to train the network for Cifar100 dataset. The dataset is already under **data** folder. For other datasets, just downlaod the datasets and revise the main file to use the specific dataset.
+# 3. Results
+### The learned feature embeddings:
+![embeddings](https://user-images.githubusercontent.com/67793643/217549694-0c4deabe-ed97-480f-8f29-2263534b0dda.png)
+Learned feature representations of image samples: (a) the embeddings returned by the proposed method trained with the default loss function, (b) the embeddings returned by the proposed method trained with the hinge loss, (c) the embeddings returned by the proposed method trained with the softmax loss function.
+### Semantically related feature embeddings:
+
+![NirvanaHeatmap](https://user-images.githubusercontent.com/67793643/217550692-f3b65c68-9723-4fb5-ac1b-46d4fc3e32bf.png)
+The distance matrix is computed by using the centers of the testing classes. The four classes that are not used in training are closer to their semantically related classes in the learned embedding space.
+
+
+
+
