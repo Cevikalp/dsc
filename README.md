@@ -27,7 +27,9 @@ Following packages are required for this repo.
 ## Closed Set Recognition
 - Just use **'main_cifar.py'** to train the network for Cifar100 dataset. The dataset is already under **data** folder. For other datasets, just downlaod the datasets and revise the main file to use the specific dataset.
 ## Experiments by Using DAM
-- 
+- We have prepared some source files to show the effects of DAM. You can play with the source file to see the effects of parameters, e.g., expand factor (hyperspheer radius, u), number of classes, activation functions, etc. Simply run **main_dsc_dam_module.py'. It uses a simple LeNeT that yields 2-dimensional CNN features. DAM module increases the dimesion to any desired value. The defaul number of classes is 20 and they are chosen from Cifar-100 dataset. You can increase teh nuber of classes.
+### Face Recognition Using DAM:
+
 # 3. Results
 ### The learned feature embeddings:
 ![embeddings](https://user-images.githubusercontent.com/67793643/217549694-0c4deabe-ed97-480f-8f29-2263534b0dda.png)
