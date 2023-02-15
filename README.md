@@ -23,9 +23,11 @@ Following packages are required for this repo.
 ## Synthetic Experiments
 - For synthetic experiments, simply run **'main_dsc_cifar_synthetic.py'** for our deafult loss function, **'main_dsc_cifar_synthetic_hinge.py'** for the hinge loss, and **'main_dsc_cifar_synthetic_softmax.py'** for softmax loss function. They will produce the figures used in Fig. 3 given in the paper.
 ## Open Set Recognition
-- For open set recognition, use the files under the **'OpenSet'** directory. For training simply run **xx.py** file and use **xx.py** file for testing. 
+- For open set recognition, use the files under the **'NiravanaOpenSet'** directory. For opne set recognition, we use some other libararies we deveoped for open set recognition. For training simply run **xx.py** file and use **xx.py** file for testing. If you have any question, email to **hasansaribas48@gmail.com**.
 ## Closed Set Recognition
 - Just use **'main_cifar.py'** to train the network for Cifar100 dataset. The dataset is already under **data** folder. For other datasets, just downlaod the datasets and revise the main file to use the specific dataset.
+## Experiments by Using DAM
+- 
 # 3. Results
 ### The learned feature embeddings:
 ![embeddings](https://user-images.githubusercontent.com/67793643/217549694-0c4deabe-ed97-480f-8f29-2263534b0dda.png)
