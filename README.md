@@ -29,6 +29,9 @@ Following packages are required for this repo.
 ## Experiments by Using DAM
 - We have prepared some source files to show the effects of DAM. You can play with the source file to see the effects of parameters, e.g., expand factor (hyperspheer radius, u), number of classes, activation functions, etc. Simply run **'main_dsc_dam_module.py'**. It uses a simple LeNeT that yields 2-dimensional CNN features. DAM module increases the dimesion to any desired value. The defaul number of classes is 20 and they are chosen from Cifar-100 dataset. You can increase teh number of classes. You can clearly see a big accuracy performance difference when different expand factors are used. Just set this value 24 and then 1000. You will see that setting u to 1000 yields significantly better accuracies compared to the one setting u to 24.
 ### Face Recognition Using DAM:
+To train the network using DAM, just run **'NirvanaFaceDAM.py'**. It will fine tune from our previously trained deep simplex classifier using DAM. The pretrained model can found at the folder **./face_models/ResNet101_lr0.000001_Nirvana_Expand1000_DAM**. For evaluation, just set the **test_only** parameter to True at line 237. You can obtain the verifiction results given our paper.
+### Face Recognition Using the Revised Network
+To train the network using the revised network, just run **'NirvanaFaceRevisedNetwork.py'**. It will fine tune from our previously trained deep simplex classifier using revised network. The pretrained model can found at the folder **./face_models/ResNet101_lr0.000001_Nirvana_ResNet101_lr0.000100_Nirvana_Expand2000_Epoch5_NetworkRevised**. For evaluation, just set the **test_only** parameter to True at line 239. You can obtain the verifiction results given our paper.
 
 # 3. Results
 ### The learned feature embeddings:
