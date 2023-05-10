@@ -25,7 +25,7 @@ def train_one_epoch(model, centerloss, optimizer, data_loader, device, epoch, ar
         else:
             centers = centerloss.centers
         
-        feats, _= model(image)
+        feats = model(image)
         loss = centerloss(feats,target)
         optimizer.zero_grad()
         loss.backward()
@@ -340,7 +340,7 @@ def dataset_preperation(args):
         normalize = transforms.Normalize(mean=[0.5, 0.5, 0.5],
                                         std=[0.5, 0.5, 0.5]) 
         data_loader =  torch.utils.data.DataLoader(
-            datasets.ImageFolder(root='/run/media/mlcv/SSD2/Hasan/NirvanaFace/data/faces_ms1m_v3_12k', transform=transforms.Compose([
+            datasets.ImageFolder(root='/home/mlcv/CevikalpPy/deep_simplex_classifier/data/faces_ms1m_v3_12k', transform=transforms.Compose([
                 transforms.Resize((112,112)),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
@@ -350,7 +350,7 @@ def dataset_preperation(args):
             num_workers=args.workers, pin_memory=True)
 
         data_loader_val = torch.utils.data.DataLoader(
-            datasets.ImageFolder(root='/run/media/mlcv/SSD2/Hasan/NirvanaFace/data/vgg_faces_img_2049', transform=transforms.Compose([
+            datasets.ImageFolder(root='/home/mlcv/CevikalpPy/deep_simplex_classifier/data/vgg_faces_img_2049', transform=transforms.Compose([
                 transforms.Resize((112,112)),
                 transforms.ToTensor(),
                 normalize,
