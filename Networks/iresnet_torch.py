@@ -174,7 +174,7 @@ def _iresnet(arch, block, layers, pretrained, progress, **kwargs):
             chk.pop('fc.bias')
             model.load_state_dict(chk,strict=False)
         else:
-            model.load_state_dict(torch.load("/run/media/mlcv/SSD2/Hasan/NirvanaFace2/Networks/ms1m_v3_arcface_r100_fp16.pth"),strict=True)
+            model.load_state_dict(torch.load("/home/mlcv/CevikalpPy/deep_simplex_classifier/Networks/ms1m_v3_arcface_r100_fp16.pth"),strict=True)
     return model
 
 

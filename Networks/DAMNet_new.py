@@ -19,6 +19,7 @@ import torch.nn as nn
 import torchvision.models as models
 from .model_irse import IR_50
 from Networks.iresnet_torch_new import iresnet100
+from modules.lenet import LeNet
 
 class DAMSequential(nn.Module):
     def __init__(self, input_dim = 128, output_dim=10):
@@ -105,13 +106,83 @@ class DAMDebug(nn.Module):
   
 
 class DAMGeneral(nn.Module):
-     def __init__(self, input_dim = 128, num_layers=1):
+    def __init__(self, base_model, input_dim = 2, output_dim=10, num_layers=2):
          super(DAMGeneral, self).__init__()
-         self.model = iresnet100(pretrained=False)
+         # self.model = models.resnet50(pretrained=True)
+         # input_dim = self.model.fc.weight.shape[1]
+         self.model = base_model
+         input_dim = self.model.fc2.weight.shape[1]
+         self.out_dim = output_dim
+         ratio = max(input_dim/output_dim, output_dim/input_dim)
+         self.coef = ratio**(1/num_layers)
+         self.layers = []
+         
+         for i in range(num_layers):
+             if input_dim*self.coef > self.out_dim:
+                 self.layers.append(nn.Linear(input_dim, output_dim))
+                 input_dim = self.out_dim
+             else:
+                 self.layers.append(nn.Linear(input_dim, math.ceil(input_dim*self.coef)))
+                 input_dim = math.ceil(input_dim*self.coef)
+             self.layers.append(nn.PReLU())
+         else:
+             self.layers.append(nn.Linear(input_dim, output_dim))
+
+         self.layers = nn.Sequential(*self.layers)
+         
+    def forward(self, x):
+         feats, out = self.model(x)
+         dam_out = self.layers(feats)
+         return dam_out
+
+class DAMGeneralML(nn.Module):
+     def __init__(self, base_model, input_dim = 128, num_dim=10, num_layers=2, pretrained=True):
+         super(DAMGeneralML, self).__init__()
+         # self.model = models.resnet101(pretrained=True)
+         #self.model = IR_50(pretrained=pretrained, input_size=[112,112], num_classes = 5088)
+         #self.model = iresnet100(pretrained=False)
+         self.model = base_model
+         #for params in self.model.parameters():
+          #   params.requires_grad = False
+         
+         # self.model = models.resnet50(pretrained=True)
+         #input_dim=512
+         # input_dim = self.model.fc.weight.shape[1]
+         self.num_dim = num_dim
+         ratio = max(input_dim/num_dim, num_dim/input_dim)
+         if num_layers == 0:
+            pass
+         else:
+            self.coef = ratio**(1/num_layers)
+         self.layers = []
+         
+         for i in range(num_layers):
+             if input_dim*self.coef > self.num_dim:
+                 self.layers.append(nn.Linear(input_dim, num_dim))
+                 input_dim = self.num_dim
+             else:
+                 self.layers.append(nn.Linear(input_dim, math.ceil(input_dim*self.coef)))
+                 input_dim = math.ceil(input_dim*self.coef)
+             self.layers.append(nn.PReLU())
+             self.layers.append(nn.BatchNorm1d(input_dim,eps=1e-05))
+         
+         self.layers.append(nn.Linear(input_dim, num_dim))
+         self.layers = nn.Sequential(*self.layers)
+         
+     def forward(self, x):
+         feats, out = self.model(x)
+         dam_out = self.layers(feats)
+         return dam_out
+# x = torch.ones(128,3,112,112)
+# dam = DAMGeneral(2048, 256)
+# out = dam(x)
+
+class RevisedNetwork(nn.Module):
+     def __init__(self, base_model, input_dim = 128, output_dim = 12500, num_layers=1):
+         super(RevisedNetwork, self).__init__()
+         self.model = base_model
         #for params in self.model.parameters():
           #   params.requires_grad = False
-         input_dim = 512*7*7
-         output_dim = 12500
          self.layers = []
          for i in range(num_layers):
              self.layers.append(nn.Linear(input_dim, output_dim))
@@ -122,41 +193,26 @@ class DAMGeneral(nn.Module):
      def forward(self, x):
          feats, out = self.model(x)
          dam_out = self.layers(feats)
-         return dam_out, dam_out
+         return dam_out
 # model = models.resnet50(pretrained=True)
 
-class DAMGeneralNew(nn.Module):
-     def __init__(self, input_dim = 128, num_dim=10, num_layers=2):
-         super(DAMGeneralNew, self).__init__()
-         # self.model = models.resnet101(pretrained=True)
-         self.model = IR_50(pretrained=True,input_size=[112,112], num_classes = 5088)
-         # input_dim = self.model.output_layer.weight.shape[1]
-         # self.model = models.resnet50(pretrained=True)
-         input_dim=512
-         # input_dim = self.model.fc.weight.shape[1]
-         self.num_dim = num_dim
-         ratio = max(input_dim/num_dim, num_dim/input_dim)
-         self.coef = ratio**(1/num_layers)
-         self.layers = []
-         
-         for i in range(num_layers):
-             if input_dim*self.coef > self.num_dim:
-                 self.layers.append(nn.Linear(input_dim, num_dim))
-                 input_dim = self.num_dim
-             else:
-                 self.layers.append(nn.Linear(input_dim, math.ceil(input_dim*self.coef)))
-                 input_dim = math.ceil(input_dim*self.coef)
-             self.layers.append(nn.ReLU())
-         else:
-             self.layers.append(nn.Linear(input_dim, num_dim))
 
-         self.layers = nn.Sequential(*self.layers)
-         
-     def forward(self, x):
-         feats, out = self.model(x)
-         dam_out = self.layers(feats)
-         return dam_out, dam_out
+class DAMEmb(nn.Module):
+    def __init__(self, input_dim = 2, output_dim=10, num_layers=2):
+        super(DAMEmb, self).__init__()
+        #self.model = models.(pretrained=True)
+        self.model = LeNet(10)
+        input_dim = self.model.fc2.weight.shape[1]
+        self.emb = nn.Embedding(int(input_dim), int(output_dim))
+        self.layer1 = nn.Linear(output_dim, output_dim)
+        self.layer1_act = nn.ReLU()
+        self.layer2 = nn.Linear(int(output_dim), output_dim)  
 
-# x = torch.ones(128,3,112,112)
-# dam = DAMGeneral(2048, 256)
-# out = dam(x)
+    def forward(self, x):
+        feats, out = self.model(x)
+        feats = self.emb(feats)
+        out = self.layer1(feats)
+        out = self.layer1_act(out)
+        out = self.layer2(out)
+        return out
+  

@@ -18,6 +18,7 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 from .model_irse import IR_50
+from Networks.iresnet_torch_new import iresnet100
 
 class DAMSequential(nn.Module):
     def __init__(self, input_dim = 128, output_dim=10):
@@ -56,26 +57,7 @@ class DAMDebug(nn.Module):
 # dam = DAM(x.shape[1], 256)
 # out = dam(x)
 
-class DAMGeneral(nn.Module):
-     def __init__(self, input_dim = 128, num_dim=10, num_layers=1):
-         super(DAMGeneral, self).__init__()
-         self.model = models.resnet50(pretrained=True)
-         self.layers = []
-         
-         for i in range(num_layers):
-             self.layers.append(nn.Linear(input_dim, int(input_dim*0.5)))
-             self.layers.append(nn.Sigmoid())
-             input_dim = int(input_dim*0.5)
-         else:
-             self.layers.append(nn.Linear(input_dim, num_dim))
-             self.layers.append(nn.Sigmoid())
 
-         self.layers = nn.Sequential(*self.layers)
-         
-     def forward(self, x):
-         feats, out = self.model(x)
-         dam_out = self.layers(feats)
-         return dam_out
 # model = models.resnet50(pretrained=True)
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -123,30 +105,29 @@ class DAMDebug(nn.Module):
   
 
 class DAMGeneral(nn.Module):
-     def __init__(self, input_dim = 128, num_dim=10, num_layers=1):
+     def __init__(self, input_dim = 128, num_layers=1):
          super(DAMGeneral, self).__init__()
-         self.model = models.resnet50(pretrained=True)
+         self.model = iresnet100(pretrained=False)
+        #for params in self.model.parameters():
+          #   params.requires_grad = False
+         input_dim = 512*7*7
+         output_dim = 12500
          self.layers = []
-         
          for i in range(num_layers):
-             self.layers.append(nn.Linear(input_dim, int(input_dim*0.5)))
-             self.layers.append(nn.Sigmoid())
-             input_dim = int(input_dim*0.5)
-         else:
-             self.layers.append(nn.Linear(input_dim, num_dim))
-             self.layers.append(nn.Sigmoid())
+             self.layers.append(nn.Linear(input_dim, output_dim))
+             #self.layers.append(nn.Sigmoid())
 
          self.layers = nn.Sequential(*self.layers)
          
      def forward(self, x):
          feats, out = self.model(x)
          dam_out = self.layers(feats)
-         return dam_out
+         return dam_out, dam_out
 # model = models.resnet50(pretrained=True)
 
-class DAMGeneralNew(nn.Module):
+class DAMGeneralML(nn.Module):
      def __init__(self, input_dim = 128, num_dim=10, num_layers=2):
-         super(DAMGeneralNew, self).__init__()
+         super(DAMGeneralML, self).__init__()
          # self.model = models.resnet101(pretrained=True)
          self.model = IR_50(pretrained=True,input_size=[112,112], num_classes = 5088)
          # input_dim = self.model.output_layer.weight.shape[1]
