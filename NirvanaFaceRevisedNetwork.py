@@ -16,15 +16,15 @@ from torchvision import transforms as T
 from modules.utils_faceevolve import perform_val,get_val_data
 from modules.utils import train_one_epoch, evaluate_majority_voting, evaluate_ijba_maj_vot, dataset_preperation
 from Networks.model_irse import IR_50
-from Networks.iresnet_torch import iresnet100
-from Networks.DAMNet_new import DAMGeneralML
+from Networks.iresnet_torch_new import iresnet100
+from Networks.DAMNet_new import RevisedNetwork
 
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
 os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2,3'
 os.environ["OMP_NUM_THREADS"]=str(4)
 
 def main(args):
-    save_dir = os.path.join('logs','NirvanaFacePaper12kRandom','%s_%s_lr%.6f_Nirvana_Expand%d_Epoch%d_Seed%d_div%d'%(args.dataset_name,args.Network,args.lr, args.Expand, args.epochs, args.Seed, args.div))
+    save_dir = os.path.join('logs','NirvanaFacePaper12kE2000Paper','%s_%s_lr%.6f_Nirvana_Expand%d_Epoch%d_Seed%d_div%d'%(args.dataset_name,args.Network,args.lr, args.Expand, args.epochs, args.Seed, args.div))
     utils.mkdir(save_dir)
     with open(os.path.join(save_dir, 'commandline_args.txt'), 'w') as f:
         json.dump(args.__dict__, f, indent=2)
@@ -53,10 +53,12 @@ def main(args):
     #model = IR_50(pretrained=True,input_size=[112,112], num_classes = args.num_classes)
     base_model = iresnet100(pretrained=args.pretrained)
     args.feat_dim = 12500
-    model = DAMGeneralML(base_model, 512,  args.feat_dim, 1)
-        
-    #checkpointinitial = torch.load("/run/media/mlcv/SSD2/Hasan/NirvanaFace2/logs/NirvanaFacePaper12kE2000/VGGFace2_ResNet50_lr0.000100_Nirvana_Expand2000_Epoch5_Seed0_div10/best_checkpoint.pth")
-    #model.load_state_dict(checkpointinitial['model'])
+    input_dim = 512*7*7
+    #output_dim = 12500
+    model = RevisedNetwork(base_model, input_dim, output_dim=args.feat_dim, num_layers=1)
+    
+    checkpointinitial = torch.load("/home/mlcv/CevikalpPy/deep_simplex_classifier/face_models/ResNet101_lr0.000100_Nirvana_Expand2000_Epoch5_NetworkRevised/best_checkpoint.pth")
+    model.load_state_dict(checkpointinitial['model'])
     #epoch = checkpointinitial['epoch']
     model.to(device)
 
@@ -82,8 +84,8 @@ def main(args):
     #                             momentum=args.momentum,
     #                             weight_decay=args.weight_decay)
     optimizer = torch.optim.Adam(model.parameters(), args.lr)
-    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.lr_step_size, gamma=args.lr_gamma)
-    #lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
+    # lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.lr_step_size, gamma=args.lr_gamma)
+    lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
 
     model_without_ddp = model
     centerloss_without_ddp = centerloss
@@ -201,35 +203,35 @@ def parse_args():
     import argparse
     parser = argparse.ArgumentParser(description='PyTorch Classification Training')
     parser.add_argument('--device', default='cuda_1', help='device ex. cuda_7, cuda_6')
-    parser.add_argument('-b', '--batch-size', default=8, type=int)
+    parser.add_argument('-b', '--batch-size', default=12, type=int)
     parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                         help='start epoch')
     parser.add_argument('-d', '--dataset_name', default='VGGFace2', metavar='N',
                         help='CIFAR10, CIFAR100, car196, MNIST, VGGFace2 ')
     parser.add_argument('-n', '--Network', default='ResNet50', metavar='N',
                         help='ResNet18, ResNet50')
-    parser.add_argument('--epochs', default=100, type=int, metavar='N',
+    parser.add_argument('--epochs', default=5, type=int, metavar='N',
                         help='number of total epochs to run')
     parser.add_argument('--div', default=10, type=int, metavar='N',
                         help='division number for Nirvana Hinge loss')
     parser.add_argument('--num_classes', default=12000, type=int, metavar='N',
                         help='number of classes')
-    parser.add_argument('--Expand', default=256, type=int, metavar='N',
+    parser.add_argument('--Expand', default=2000, type=int, metavar='N',
                         help='Expand factor of centers')
     parser.add_argument('--Seed', default=0, type=int, metavar='N',
                         help='Seed')
-    parser.add_argument('--feat_dim', default=12500, type=int, metavar='N',
+    parser.add_argument('--feat_dim', default=512, type=int, metavar='N',
                         help='feature dimension of the model')
     parser.add_argument('-j', '--workers', default=0, type=int, metavar='N',
                         help='number of data loading workers (default: 16)')
-    parser.add_argument('--lr', default=0.001, type=float, help='initial learning rate')
+    parser.add_argument('--lr', default=0.0001, type=float, help='initial learning rate')
     parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                         help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
                         metavar='W', help='weight decay (default: 1e-4)',
                         dest='weight_decay')
-    parser.add_argument('--lr-step-size', default=5, type=int, help='decrease lr every step-size epochs')
-    parser.add_argument('--lr-gamma', default=0.5, type=float, help='decrease lr by a factor of lr-gamma')
+    parser.add_argument('--lr-step-size', default=50, type=int, help='decrease lr every step-size epochs')
+    parser.add_argument('--lr-gamma', default=0.1, type=float, help='decrease lr by a factor of lr-gamma')
     parser.add_argument('--lamda', default=0.5, type=float, help='decrease lr by a factor of lr-gamma')
     parser.add_argument('--print-freq', default=500, type=int, help='print frequency')
     parser.add_argument('--eval-freq', default=1, type=int, help='print frequency')

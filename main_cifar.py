@@ -17,14 +17,14 @@ import modules.utils_torchvision as utils
 from modules.NirvanaLoss import center_loss_nirvana, accuracy_l2_nosubcenter, get_l2_pred_nosubcenter, cosine_similarity, euc_cos
 from torch.utils.tensorboard import SummaryWriter
 import torchvision.datasets as datasets
-# import torchvision.models as models
+import torchvision.models as models
 from matplotlib import pyplot as plt
 # from modules.utils_mine import plot_features
 import modules.resnet2 as resnet
 import warnings
 
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 os.environ["OMP_NUM_THREADS"]=str(4)
 warnings.filterwarnings("ignore")
 
@@ -140,6 +140,7 @@ def main(args):
     print("Creating model")
     # model = models.resnet50(pretrained=True)
     model = resnet.ResNet18(num_classes=args.num_classes)
+    # model = resnet.ResNet18(num_classes=args.num_classes)
     model.to(device)
     args.feat_dim = model.linear.weight.shape[1]
     print(args)
@@ -226,24 +227,24 @@ def parse_args():
     import argparse
     parser = argparse.ArgumentParser(description='PyTorch Classification Training')
     parser.add_argument('--device', default='cuda', help='device')
-    parser.add_argument('-b', '--batch-size', default=16, type=int)
+    parser.add_argument('-b', '--batch-size', default=128, type=int)
     parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                         help='start epoch')
-    parser.add_argument('--epochs', default=100, type=int, metavar='N',
+    parser.add_argument('--epochs', default=400, type=int, metavar='N',
                         help='number of total epochs to run')
     parser.add_argument('--num_classes', default=200, type=int, metavar='N',
                         help='number of classes')
-    parser.add_argument('--Expand', default=200, type=int, metavar='N',
+    parser.add_argument('--Expand', default=1000, type=int, metavar='N',
                         help='Expand factor of centers')
     parser.add_argument('--Seed', default=0, type=int, metavar='N',
                         help='Seed')
-    parser.add_argument('--feat_dim', default=512, type=int, metavar='N',
+    parser.add_argument('--feat_dim', default=2048, type=int, metavar='N',
                         help='feature dimension of the model')
     parser.add_argument('--only-centers-upto', default=-1, type=int, metavar='N',
                         help='train only centers up to epoch #')
     parser.add_argument('-j', '--workers', default=0, type=int, metavar='N',
                         help='number of data loading workers (default: 16)')
-    parser.add_argument('--lr', default=0.1, type=float, help='initial learning rate')
+    parser.add_argument('--lr', default=0.05, type=float, help='initial learning rate')
     parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                         help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=5e-4, type=float,

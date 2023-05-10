@@ -20,7 +20,8 @@ from modules.NirvanaLoss import (
     euc_cos,
 )
 from modules.lenet import LeNet
-from modules.DAMNet import DAMDebug, DAMGeneral, DAMEmb
+#from modules.DAMNet import DAMDebug, DAMGeneral, DAMEmb
+from Networks.DAMNet_new import DAMGeneralML
 from torch.utils.tensorboard import SummaryWriter
 import torchvision.datasets as datasets
 
@@ -28,6 +29,7 @@ import torchvision.datasets as datasets
 from matplotlib import pyplot as plt
 from modules.utils_mine import plot_features
 import modules.resnet2 as resnet
+from modules.lenet import LeNet
 import warnings
 from datasets.osr_dataloader import CIFAR10_OSR, CIFAR100_OSR
 
@@ -105,7 +107,24 @@ def evaluate_majority_voting(model, centerloss, data_loader, device, epoch, args
     print("Test Acc@1_L2 %.3f" % test_acc_l2)
     print("Test Acc@1_COSINE %.3f" % test_acc_l2_norm)
     print("Test Acc@EUC_COS %.3f" % test_acc_dist_cos)
-    
+    # all_feats = torch.cat(all_feats, 0).cpu().numpy()
+    # centers = centerloss.centers.detach().cpu().numpy()
+    # for ii in range(all_feats.shape[0]):
+    #     fig, ax = plt.subplots()
+    #     ax.scatter(centers[0,0], centers[0,1], marker='*')
+    #     ax.scatter(centers[1,0], centers[1,1], marker='x')
+    #     ax.scatter(centers[2,0], centers[2,1], marker='o')
+    #     euc_distance = torch.cdist(torch.from_numpy(all_feats[ii]).reshape(1,-1), centerloss.centers.detach().cpu())
+    #     cos_distance = torch.nn.functional.cosine_similarity(torch.from_numpy(all_feats[ii]).reshape(1,-1), centerloss.centers.detach().cpu())
+    #     print('Label:', labels[ii].item(), 'Eucdistance:', euc_distance, 'Euc Pred:', preds_l2[ii].item(), 'Cosdistance:', cos_distance, 'Cosine Pred:', preds_l2_norm[ii].item())
+    #     ax.scatter(all_feats[ii,0], all_feats[ii,1], marker='.')
+    #     plt.show()
+    #     plt.close()
+    # ax = plot_features(torch.cat(all_feats, 0).cpu().numpy(), labels.cpu().numpy())
+    # ax.figure.savefig(os.path.join("figures","fig_%d.png"%epoch))
+    # plt.close('all')
+    # all_feats_tsne = TSNE(n_components=2).fit_transform(torch.cat(all_feats, 0))
+    # plot_features(all_feats_tsne, labels.data.numpy())
     return test_acc_l2, test_acc_l2_norm
 
 
@@ -133,11 +152,13 @@ def main(args):
     args.num_classes = dataset.num_classes
     print("Creating model")
     # model = models.resnet50(pretrained=True)
-    model = DAMGeneral(2, 20, 2)
-    # model = DAMEmb(2, 10, 1)
+    base_model = LeNet(20)
+    #model = DAMGeneral(2, 30, 1)
+    args.feat_dim = 20
+    model = DAMGeneralML(base_model, 2,  args.feat_dim, 2)
     model.to(device)
 
-    args.feat_dim = 20
+  
     print(args)
 
     # cross_entropy_nirvana
@@ -216,10 +237,10 @@ def parse_args():
 
     parser = argparse.ArgumentParser(description="PyTorch Classification Training")
     parser.add_argument("--device", default="cuda", help="device")
-    parser.add_argument("-b", "--batch-size", default=128, type=int)
+    parser.add_argument("-b", "--batch-size", default=64, type=int)
     parser.add_argument("--start-epoch", default=0, type=int, metavar="N", help="start epoch")
-    parser.add_argument("--epochs", default=100, type=int, metavar="N", help="number of total epochs to run")
-    parser.add_argument("--num_classes", default=20, type=int, metavar="N", help="number of classes")
+    parser.add_argument("--epochs", default=250, type=int, metavar="N", help="number of total epochs to run")
+    parser.add_argument("--num_classes", default=200, type=int, metavar="N", help="number of classes")
     parser.add_argument("--Expand", default=1000, type=int, metavar="N", help="Expand factor of centers")
     parser.add_argument("--Seed", default=0, type=int, metavar="N", help="Seed")
     parser.add_argument("--feat_dim", default=512, type=int, metavar="N", help="feature dimension of the model")

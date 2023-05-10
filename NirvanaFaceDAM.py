@@ -55,8 +55,8 @@ def main(args):
     args.feat_dim = 12500
     model = DAMGeneralML(base_model, 512,  args.feat_dim, 1)
         
-    #checkpointinitial = torch.load("/run/media/mlcv/SSD2/Hasan/NirvanaFace2/logs/NirvanaFacePaper12kE2000/VGGFace2_ResNet50_lr0.000100_Nirvana_Expand2000_Epoch5_Seed0_div10/best_checkpoint.pth")
-    #model.load_state_dict(checkpointinitial['model'])
+    checkpointinitial = torch.load("/home/mlcv/CevikalpPy/deep_simplex_classifier/face_models/ResNet101_lr0.000001_Nirvana_Expand1000_DAM/best_checkpoint.pth")
+    model.load_state_dict(checkpointinitial['model'])
     #epoch = checkpointinitial['epoch']
     model.to(device)
 
@@ -201,7 +201,7 @@ def parse_args():
     import argparse
     parser = argparse.ArgumentParser(description='PyTorch Classification Training')
     parser.add_argument('--device', default='cuda_1', help='device ex. cuda_7, cuda_6')
-    parser.add_argument('-b', '--batch-size', default=8, type=int)
+    parser.add_argument('-b', '--batch-size', default=24, type=int)
     parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                         help='start epoch')
     parser.add_argument('-d', '--dataset_name', default='VGGFace2', metavar='N',
@@ -214,7 +214,7 @@ def parse_args():
                         help='division number for Nirvana Hinge loss')
     parser.add_argument('--num_classes', default=12000, type=int, metavar='N',
                         help='number of classes')
-    parser.add_argument('--Expand', default=256, type=int, metavar='N',
+    parser.add_argument('--Expand', default=1000, type=int, metavar='N',
                         help='Expand factor of centers')
     parser.add_argument('--Seed', default=0, type=int, metavar='N',
                         help='Seed')
@@ -222,7 +222,7 @@ def parse_args():
                         help='feature dimension of the model')
     parser.add_argument('-j', '--workers', default=0, type=int, metavar='N',
                         help='number of data loading workers (default: 16)')
-    parser.add_argument('--lr', default=0.001, type=float, help='initial learning rate')
+    parser.add_argument('--lr', default=0.0001, type=float, help='initial learning rate')
     parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                         help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
@@ -235,7 +235,7 @@ def parse_args():
     parser.add_argument('--eval-freq', default=1, type=int, help='print frequency')
     parser.add_argument('--resume', default='', help='resume from checkpoint')
     parser.add_argument('--test_only', default=False, help='Only Test the model')
-    parser.add_argument('--pretrained', default=True, help='True or False')
+    parser.add_argument('--pretrained', default=False, help='True or False')
 
     parser.add_argument(
         "--sync-bn",
