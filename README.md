@@ -23,7 +23,7 @@ Following packages are required for this repo.
 ## Synthetic Experiments
 - For synthetic experiments, simply run **'main_dsc_cifar_synthetic.py'** for our deafult loss function, **'main_dsc_cifar_synthetic_hinge.py'** for the hinge loss, and **'main_dsc_cifar_synthetic_softmax.py'** for softmax loss function. They will produce the figures used in Fig. 3 given in the paper.
 ## Open Set Recognition
-- For open set recognition, simply run **'NirvanaOSR.py'** for to run experiments add datasets to "data" folder and choose dataset from mnist | svhn | cifar10 | cifar100 | tiny_imagenet one of them. Use "classifier32" networks for all experiments except tiny_imagenet and use resnet50 for tinyimagenet. Use "NirvanaOpenset_loss" as loss function.
+- For open set recognition, simply run **'NirvanaOSR.py'** for to run experiments add datasets to "data" folder and choose dataset from mnist | svhn | cifar10 | cifar100 | tiny_imagenet one of them. Use "classifier32" networks for all experiments except tiny_imagenet and for that use resnet50. Use "NirvanaOpenset_loss" as loss function.
 ## Closed Set Recognition
 - Just use **'main_cifar.py'** to train the network for Cifar100 dataset. The dataset is already under **data** folder. For other datasets, just downlaod the datasets and revise the main file to use the specific dataset.
 ## Experiments by Using DAM
