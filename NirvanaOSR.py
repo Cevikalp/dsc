@@ -31,7 +31,7 @@ parser = argparse.ArgumentParser("Training")
 
 # Dataset
 parser.add_argument('--dataset', type=str, default='cifar10', help="mnist | svhn | cifar10 | cifar100 | tiny_imagenet")
-parser.add_argument('--dataroot', type=str, default='/home/mlcv/CevikalpPy/NirvanaOSet/data')
+parser.add_argument('--dataroot', type=str, default='./data')
 parser.add_argument('--outf', type=str, default='./log_random30k_noisy_rampfalse')
 parser.add_argument('--out-num', type=int, default=50, help='For CIFAR100')
 # optimization
