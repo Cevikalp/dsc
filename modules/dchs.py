@@ -76,7 +76,7 @@ class NirvanaOpenset_loss(nn.Module):
         self.num_centers = self.num_classes
         self.feat_dim = feat_dim
         self.margin = margin
-        self.E = num_classes
+        self.E = Expand
         if(precalc_centers):
             precalculated_centers = FindCenters(self.feat_dim, self.E)
             precalculated_centers = precalculated_centers[:self.num_classes,:]
