@@ -43,6 +43,7 @@ Learned feature representations of image samples: (a) the embeddings returned by
 The distance matrix is computed by using the centers of the testing classes. The four classes that are not used in training are closer to their semantically related classes in the learned embedding space.
 
 ## Citation
+
 @article{cevikalp2025,
   author    = {Hakan Cevikalp and Hasan Saribas and Bedirhan Uzun},
   title     = {Reaching nirvana: Maximizing the margin in both Euclidean and angular spaces for deep neural network classification},
