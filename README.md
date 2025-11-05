@@ -42,6 +42,17 @@ Learned feature representations of image samples: (a) the embeddings returned by
 ![NirvanaHeatmap](https://user-images.githubusercontent.com/67793643/217550692-f3b65c68-9723-4fb5-ac1b-46d4fc3e32bf.png)
 The distance matrix is computed by using the centers of the testing classes. The four classes that are not used in training are closer to their semantically related classes in the learned embedding space.
 
+## Citation
+@article{cevikalp2025,
+  author    = {Hakan Cevikalp and Hasan Saribas and Bedirhan Uzun},
+  title     = {Reaching nirvana: Maximizing the margin in both Euclidean and angular spaces for deep neural network classification},
+  pages = {8178--8191},
+  journal = {IEEE Transactions on Neural Networks and Learning Systems},
+  volume = {36},
+  year      = {2025},
+}
+
+
 
 
 
